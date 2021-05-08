@@ -1,0 +1,103 @@
+<html>
+<head>
+<style>
+body, html { padding: 0; margin: 0 ;}
+#canvas {
+  background: #eee;
+  display:inline-block;
+}
+#named { display: inline-block; }
+#code { height: 200px; width: 400px; font-size: 12pt; font-family: consolas, 'courier new'}
+
+</style>
+<title>IconDesigner 8x5</title>
+</head>
+<body>
+<canvas id="canvas" width="250" height="400">
+
+</canvas >
+<table style="display: inline-block;">
+<tr>
+<td><input id="named" value="Untitled" /></td>
+</tr>
+<tr>
+<td><textarea id="code"></textarea></td>
+</tr>
+</table>
+<!-- <script src="https://code.jquery.com/jquery-1.11.3.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script>
+var xx = 0;
+var yy = 0;
+var mb = -1;
+var icon = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+  for (y=0; y<8; y++) {
+  for (x=0; x<5; x++) {
+    icon[x][y] = 0;
+  }
+  }
+
+
+$('#canvas').on('mousemove', (e) => {
+  var x = e.pageX;
+  var y = e.pageY;
+  xx = Math.floor(x/50);
+  yy = Math.floor(y/50);
+  if (mb != -1) {
+    setBlock(xx,yy,mb);
+  }
+});
+$('#canvas').on('mousedown', (e) => {
+  switch (event.which) {
+    case 1: /* left */
+      mb = 1;
+    break;
+    case 3: /* right */
+      mb = 0;
+    break;
+  }
+  if (mb != -1) {
+    setBlock(xx,yy,mb);
+  }
+});
+$('#canvas').on('mouseup', (e) => {
+  mb = -1;
+});
+
+$('#canvas').on('contextmenu', (e) => {
+  e.preventDefault();
+});
+
+function setBlock(x,y,s) {
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext("2d");
+  if (s == 1) {
+    ctx.fillStyle = "#0000ff";
+  } else {
+    ctx.fillStyle = "#eee";
+  }
+  ctx.fillRect(50 * x, 50 * y, 50, 50);
+  icon[x][y] = s;
+  createIcon();
+}
+
+function createIcon() {
+  let named = $('#named').val();
+  let html = `byte Icon${named}[8] = {\n`;
+  for (y=0; y<8; y++) {
+    html += '  0b';
+  for (x=0; x<5; x++) {
+    html += icon[x][y];
+  }
+    html += ',\n';
+  }
+  html += '};';
+  $('#code').html(html);
+}
+
+$(document).ready(function(){
+
+});
+</script>
+</body>
+</html>
